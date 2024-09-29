@@ -10,3 +10,5 @@ data class Task(
     @ColumnInfo(name = "description") val description: String,
     @ColumnInfo(name = "is_completed") val isCompleted: Boolean = false
 )
+
+
