@@ -98,5 +98,21 @@ class TaskViewModel(private val dao: TaskDao) : ViewModel() {
             _tasks.value = dao.searchTasks(query) // Actualiza la lista de tareas con los resultados de la búsqueda
         }
     }
+
+    // Función para ordenar tareas por nombre
+    fun sortTasksByName() {
+        _tasks.value = _tasks.value.sortedBy { it.description }
+    }
+
+    // Función para ordenar tareas por fecha (usando el ID como referencia)
+    fun sortTasksByDate() {
+        _tasks.value = _tasks.value.sortedBy { it.id } // Asumiendo que el ID representa la fecha de creación
+    }
+
+    // Función para ordenar tareas por estado (completada o no)
+    fun sortTasksByStatus() {
+        _tasks.value = _tasks.value.sortedBy { it.isCompleted }
+    }
+
 }
 

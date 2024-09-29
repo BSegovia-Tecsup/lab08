@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.room.Room
 import kotlinx.coroutines.launch
@@ -54,7 +55,7 @@ fun TaskScreen(viewModel: TaskViewModel) {
             value = searchQuery,
             onValueChange = {
                 searchQuery = it
-                viewModel.searchTasks(it) // Llama a la función de búsqueda cada vez que el texto cambia
+                viewModel.searchTasks(it)
             },
             label = { Text("Buscar tarea") },
             modifier = Modifier.fillMaxWidth()
@@ -109,6 +110,22 @@ fun TaskScreen(viewModel: TaskViewModel) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Botones para ordenar tareas
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Button(onClick = { viewModel.sortTasksByName() }) {
+                Text("Ordenar por nombre")
+            }
+            Button(onClick = { viewModel.sortTasksByDate() }) {
+                Text("Ordenar por fecha")
+            }
+
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         // Mostrar tareas según el filtro aplicado
         tasks.forEach { task ->
             Row(
@@ -152,6 +169,60 @@ fun TaskScreen(viewModel: TaskViewModel) {
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewTaskScreen() {
+    // Simular un ViewModel
+    val viewModel = TaskViewModel(FakeTaskDao())
+
+    // Llama a tu TaskScreen con el ViewModel simulado
+    TaskScreen(viewModel = viewModel)
+}
+
+// Fake DAO para la previsualización
+class FakeTaskDao : TaskDao {
+    private val tasks = mutableListOf(
+        Task(id = 1, description = "Tarea 1", isCompleted = false),
+        Task(id = 2, description = "Tarea 2", isCompleted = true),
+        Task(id = 3, description = "Tarea 3", isCompleted = false)
+    )
+
+    override suspend fun getAllTasks(): List<Task> = tasks
+
+    override suspend fun getTasksByCompletionStatus(isCompleted: Boolean): List<Task> =
+        tasks.filter { it.isCompleted == isCompleted }
+
+    override suspend fun insertTask(task: Task) {
+        tasks.add(task)
+    }
+
+    override suspend fun updateTask(task: Task) {
+        val index = tasks.indexOfFirst { it.id == task.id }
+        if (index != -1) {
+            tasks[index] = task
+        }
+    }
+
+    override suspend fun deleteTaskById(taskId: Int) {
+        tasks.removeIf { it.id == taskId }
+    }
+
+    override suspend fun deleteAllTasks() {
+        tasks.clear()
+    }
+
+    override suspend fun updateTaskDescription(taskId: Int, newDescription: String) {
+        val index = tasks.indexOfFirst { it.id == taskId }
+        if (index != -1) {
+            tasks[index] = tasks[index].copy(description = newDescription)
+        }
+    }
+
+    override suspend fun searchTasks(query: String): List<Task> =
+        tasks.filter { it.description.contains(query, ignoreCase = true) }
+}
+
 
 
 
