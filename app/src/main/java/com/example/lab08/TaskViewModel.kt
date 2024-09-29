@@ -71,5 +71,26 @@ class TaskViewModel(private val dao: TaskDao) : ViewModel() {
             _tasks.value = dao.getAllTasks() // Actualizamos la lista de tareas
         }
     }
+
+    // Función para obtener solo las tareas completadas
+    fun getCompletedTasks() {
+        viewModelScope.launch {
+            _tasks.value = dao.getTasksByCompletionStatus(isCompleted = true)
+        }
+    }
+
+    // Función para obtener solo las tareas pendientes
+    fun getPendingTasks() {
+        viewModelScope.launch {
+            _tasks.value = dao.getTasksByCompletionStatus(isCompleted = false)
+        }
+    }
+
+    // Función para obtener todas las tareas (resetear el filtro)
+    fun getAllTasks() {
+        viewModelScope.launch {
+            _tasks.value = dao.getAllTasks()
+        }
+    }
 }
 

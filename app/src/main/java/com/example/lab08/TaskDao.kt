@@ -34,6 +34,10 @@ interface TaskDao {
 
     @Query("DELETE FROM tasks WHERE id = :taskId")
     suspend fun deleteTaskById(taskId: Int)
+
+    @Query("SELECT * FROM tasks WHERE is_completed = :isCompleted")
+    suspend fun getTasksByCompletionStatus(isCompleted: Boolean): List<Task>
+
 }
 
 

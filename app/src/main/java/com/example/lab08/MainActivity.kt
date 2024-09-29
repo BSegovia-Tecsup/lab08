@@ -77,6 +77,25 @@ fun TaskScreen(viewModel: TaskViewModel) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Botones para filtrar tareas
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Button(onClick = { viewModel.getAllTasks() }) {
+                Text("Todas")
+            }
+            Button(onClick = { viewModel.getCompletedTasks() }) {
+                Text("Completadas")
+            }
+            Button(onClick = { viewModel.getPendingTasks() }) {
+                Text("Pendientes")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Mostrar tareas según el filtro aplicado
         tasks.forEach { task ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -100,7 +119,6 @@ fun TaskScreen(viewModel: TaskViewModel) {
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    // Botón para eliminar tarea
                     Button(onClick = {
                         viewModel.deleteTask(task)
                     }) {
@@ -120,5 +138,6 @@ fun TaskScreen(viewModel: TaskViewModel) {
         }
     }
 }
+
 
 
