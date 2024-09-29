@@ -32,6 +32,8 @@ interface TaskDao {
     @Query("UPDATE tasks SET description = :newDescription WHERE id = :taskId")
     suspend fun updateTaskDescription(taskId: Int, newDescription: String)
 
+    @Query("DELETE FROM tasks WHERE id = :taskId")
+    suspend fun deleteTaskById(taskId: Int)
 }
 
 

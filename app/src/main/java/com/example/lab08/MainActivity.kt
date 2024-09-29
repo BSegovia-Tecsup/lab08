@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
                 ).build()
 
                 val taskDao = db.taskDao()
-                val viewModel = TaskViewModel(taskDao) 
+                val viewModel = TaskViewModel(taskDao)
 
                 TaskScreen(viewModel)
             }
@@ -68,7 +68,9 @@ fun TaskScreen(viewModel: TaskViewModel) {
                     newTaskDescription = ""
                 }
             },
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)
         ) {
             Text(if (isEditing) "Actualizar tarea" else "Agregar tarea")
         }
@@ -89,12 +91,20 @@ fun TaskScreen(viewModel: TaskViewModel) {
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Button(onClick = {
-                        // Configurar para editar
                         newTaskDescription = task.description
                         taskToEdit = task
                         isEditing = true
                     }) {
                         Text("Editar")
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // Botón para eliminar tarea
+                    Button(onClick = {
+                        viewModel.deleteTask(task)
+                    }) {
+                        Text("Eliminar")
                     }
                 }
             }
@@ -102,10 +112,13 @@ fun TaskScreen(viewModel: TaskViewModel) {
 
         Button(
             onClick = { coroutineScope.launch { viewModel.deleteAllTasks() } },
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
         ) {
             Text("Eliminar todas las tareas")
         }
     }
 }
+
 
