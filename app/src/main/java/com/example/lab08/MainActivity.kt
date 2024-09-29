@@ -39,6 +39,7 @@ fun TaskScreen(viewModel: TaskViewModel) {
     val tasks by viewModel.tasks.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     var newTaskDescription by remember { mutableStateOf("") }
+    var searchQuery by remember { mutableStateOf("") }
 
     var isEditing by remember { mutableStateOf(false) }
     var taskToEdit by remember { mutableStateOf<Task?>(null) }
@@ -48,6 +49,19 @@ fun TaskScreen(viewModel: TaskViewModel) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        // Barra de búsqueda
+        TextField(
+            value = searchQuery,
+            onValueChange = {
+                searchQuery = it
+                viewModel.searchTasks(it) // Llama a la función de búsqueda cada vez que el texto cambia
+            },
+            label = { Text("Buscar tarea") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         TextField(
             value = newTaskDescription,
             onValueChange = { newTaskDescription = it },

@@ -38,6 +38,9 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE is_completed = :isCompleted")
     suspend fun getTasksByCompletionStatus(isCompleted: Boolean): List<Task>
 
+    @Query("SELECT * FROM tasks WHERE description LIKE '%' || :query || '%'")
+    suspend fun searchTasks(query: String): List<Task>
+
 }
 
 

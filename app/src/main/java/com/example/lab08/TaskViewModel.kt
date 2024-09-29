@@ -92,5 +92,11 @@ class TaskViewModel(private val dao: TaskDao) : ViewModel() {
             _tasks.value = dao.getAllTasks()
         }
     }
+
+    fun searchTasks(query: String) {
+        viewModelScope.launch {
+            _tasks.value = dao.searchTasks(query) // Actualiza la lista de tareas con los resultados de la búsqueda
+        }
+    }
 }
 
