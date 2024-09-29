@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
                 ).build()
 
                 val taskDao = db.taskDao()
-                val viewModel = TaskViewModel(taskDao)
+                val viewModel = TaskViewModel(taskDao) 
 
                 TaskScreen(viewModel)
             }
@@ -40,6 +40,8 @@ fun TaskScreen(viewModel: TaskViewModel) {
     val coroutineScope = rememberCoroutineScope()
     var newTaskDescription by remember { mutableStateOf("") }
 
+    var isEditing by remember { mutableStateOf(false) }
+    var taskToEdit by remember { mutableStateOf<Task?>(null) }
 
     Column(
         modifier = Modifier
@@ -49,26 +51,29 @@ fun TaskScreen(viewModel: TaskViewModel) {
         TextField(
             value = newTaskDescription,
             onValueChange = { newTaskDescription = it },
-            label = { Text("Nueva tarea") },
+            label = { Text(if (isEditing) "Editar tarea" else "Nueva tarea") },
             modifier = Modifier.fillMaxWidth()
         )
-
 
         Button(
             onClick = {
                 if (newTaskDescription.isNotEmpty()) {
-                    viewModel.addTask(newTaskDescription)
+                    if (isEditing && taskToEdit != null) {
+                        viewModel.editTask(taskToEdit!!.copy(description = newTaskDescription))
+                        isEditing = false
+                        taskToEdit = null
+                    } else {
+                        viewModel.addTask(newTaskDescription)
+                    }
                     newTaskDescription = ""
                 }
             },
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
         ) {
-            Text("Agregar tarea")
+            Text(if (isEditing) "Actualizar tarea" else "Agregar tarea")
         }
 
-
         Spacer(modifier = Modifier.height(16.dp))
-
 
         tasks.forEach { task ->
             Row(
@@ -76,12 +81,24 @@ fun TaskScreen(viewModel: TaskViewModel) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = task.description)
-                Button(onClick = { viewModel.toggleTaskCompletion(task) }) {
-                    Text(if (task.isCompleted) "Completada" else "Pendiente")
+                Row {
+                    Button(onClick = { viewModel.toggleTaskCompletion(task) }) {
+                        Text(if (task.isCompleted) "Completada" else "Pendiente")
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Button(onClick = {
+                        // Configurar para editar
+                        newTaskDescription = task.description
+                        taskToEdit = task
+                        isEditing = true
+                    }) {
+                        Text("Editar")
+                    }
                 }
             }
         }
-
 
         Button(
             onClick = { coroutineScope.launch { viewModel.deleteAllTasks() } },
@@ -91,3 +108,4 @@ fun TaskScreen(viewModel: TaskViewModel) {
         }
     }
 }
+

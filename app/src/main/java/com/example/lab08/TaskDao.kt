@@ -28,6 +28,10 @@ interface TaskDao {
     // Eliminar todas las tareas
     @Query("DELETE FROM tasks")
     suspend fun deleteAllTasks()
+
+    @Query("UPDATE tasks SET description = :newDescription WHERE id = :taskId")
+    suspend fun updateTaskDescription(taskId: Int, newDescription: String)
+
 }
 
 
