@@ -1,10 +1,11 @@
 package com.example.lab08
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -32,7 +33,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
 }
 
 @Composable
@@ -41,7 +41,6 @@ fun TaskScreen(viewModel: TaskViewModel) {
     val coroutineScope = rememberCoroutineScope()
     var newTaskDescription by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
-
     var isEditing by remember { mutableStateOf(false) }
     var taskToEdit by remember { mutableStateOf<Task?>(null) }
 
@@ -92,7 +91,7 @@ fun TaskScreen(viewModel: TaskViewModel) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botones para filtrar tareas
+        // Botones para filtrar y ordenar tareas
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier.fillMaxWidth()
@@ -110,7 +109,6 @@ fun TaskScreen(viewModel: TaskViewModel) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botones para ordenar tareas
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier.fillMaxWidth()
@@ -121,39 +119,42 @@ fun TaskScreen(viewModel: TaskViewModel) {
             Button(onClick = { viewModel.sortTasksByDate() }) {
                 Text("Ordenar por fecha")
             }
-
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Mostrar tareas según el filtro aplicado
-        tasks.forEach { task ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = task.description)
-                Row {
-                    Button(onClick = { viewModel.toggleTaskCompletion(task) }) {
-                        Text(if (task.isCompleted) "Completada" else "Pendiente")
-                    }
+        // Barra de desplazamiento para mostrar tareas
+        LazyColumn(
+            modifier = Modifier.weight(1F)
+        ) {
+            items(tasks) { task ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = task.description)
+                    Row {
+                        Button(onClick = { viewModel.toggleTaskCompletion(task) }) {
+                            Text(if (task.isCompleted) "Completada" else "Pendiente")
+                        }
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                    Button(onClick = {
-                        newTaskDescription = task.description
-                        taskToEdit = task
-                        isEditing = true
-                    }) {
-                        Text("Editar")
-                    }
+                        Button(onClick = {
+                            newTaskDescription = task.description
+                            taskToEdit = task
+                            isEditing = true
+                        }) {
+                            Text("Editar")
+                        }
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                    Button(onClick = {
-                        viewModel.deleteTask(task)
-                    }) {
-                        Text("Eliminar")
+                        Button(onClick = {
+                            viewModel.deleteTask(task)
+                        }) {
+                            Text("Eliminar")
+                        }
                     }
                 }
             }
@@ -222,7 +223,3 @@ class FakeTaskDao : TaskDao {
     override suspend fun searchTasks(query: String): List<Task> =
         tasks.filter { it.description.contains(query, ignoreCase = true) }
 }
-
-
-
-
